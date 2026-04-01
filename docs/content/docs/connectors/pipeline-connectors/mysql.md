@@ -178,6 +178,28 @@ pipeline:
       <td>The maximum fetch size for per poll when read table snapshot.</td>
     </tr>
     <tr>
+      <td>scan.incremental.snapshot.chunk.key-column</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>
+        The chunk key column used to split table snapshots into multiple chunks for parallel reading during incremental snapshot. <br>
+        When incremental snapshot is enabled (<code>scan.incremental.snapshot.enabled</code> is <code>true</code>) and a captured table has <strong>no primary key</strong>,
+        you must configure this option and choose exactly one <strong>NOT NULL</strong> column as the chunk key for that table. <br><br>
+
+        <strong>Format</strong>: <code>&lt;table-pattern&gt;:&lt;column&gt;</code>. Use semicolon <code>;</code> to separate multiple entries. <br>
+        - <code>&lt;table-pattern&gt;</code>: table pattern, same syntax as <code>tables</code> (supports regular expressions). Note that dot (<code>.</code>) is treated as the separator between database and table.
+          To include a dot as part of your regex (for example, to write <code>.*</code> to match any table name), prefix it with a backslash in the pattern string (<code>\.</code>);
+          the backslash prevents the dot from being treated as a separator and is removed during parsing. <br>
+        - <code>&lt;column&gt;</code>: the chunk key column name, it must exist in the matched tables. <br>
+        - If a table matches multiple patterns, the <strong>last</strong> one takes effect. <br><br>
+
+        <strong>Example (single table)</strong>: <code>adb.user_table_1:email</code><br>
+        <strong>Example (multiple tables, same key)</strong>: <code>adb.\.*:id</code><br>
+        <strong>Example (multiple tables, different keys)</strong>: <code>adb.user_table_[0-9]+:email;(app|web).order_\.*:order_id</code>
+      </td>
+    </tr>
+    <tr>
       <td>scan.startup.mode</td>
       <td>optional</td>
       <td style="word-wrap: break-word;">initial</td>

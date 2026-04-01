@@ -174,6 +174,25 @@ pipeline:
       <td>读取表快照时每次读取数据的最大条数。</td>
     </tr>
     <tr>
+      <td>scan.incremental.snapshot.chunk.key-column</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>
+        表快照的分片键列（chunk key column）。在增量快照读取时，连接器会按照该列把表切分为多个 chunk 并并行读取。<br>
+        当开启增量快照（<code>scan.incremental.snapshot.enabled</code> 为 <code>true</code>）且被捕获的表<strong>没有主键</strong>时，必须配置该参数，并且每张无主键表只能选择一个<strong>非空（NOT NULL）</strong>字段作为分片键。<br><br>
+
+        <strong>配置格式</strong>：<code>&lt;table-pattern&gt;:&lt;column&gt;</code>，多个配置项使用分号 <code>;</code> 分隔。<br>
+        - <code>&lt;table-pattern&gt;</code>：表名匹配规则，语法与 <code>tables</code> 一致，支持正则表达式；点号（<code>.</code>）作为库名与表名分隔符。如需在正则中包含点号（例如用 <code>.*</code> 匹配任意表名），请在模式字符串中将其写为 <code>\.</code>；反斜杠用于防止该点号被当作分隔符，解析时会自动去除。<br>
+        - <code>&lt;column&gt;</code>：分片键列名（字段名），必须存在于匹配到的表中。<br>
+        - 若同一张表被多个 <code>&lt;table-pattern&gt;</code> 命中，以<strong>最后一个</strong>生效。<br><br>
+
+        <strong>示例（单表）</strong>：<code>adb.user_table_1:email</code><br>
+        <strong>示例（多表同一分片键）</strong>：<code>adb.\.*:id</code>（为 <code>adb</code> 库下所有表指定 <code>id</code> 作为分片键列）<br>
+        <strong>示例（多表不同分片键）</strong>：<code>adb.user_table_[0-9]+:email;(app|web).order_\.*:order_id</code>
+      </td>
+    </tr>
+    <tr>
       <td>scan.startup.mode</td>
       <td>optional</td>
       <td style="word-wrap: break-word;">initial</td>

@@ -268,9 +268,19 @@ Flink SQL> SELECT * FROM orders;
           <td>optional</td>
           <td style="word-wrap: break-word;">(none)</td>
           <td>String</td>
-          <td>表快照的分片键，在读取表的快照时，被捕获的表会按分片键拆分为多个分片。  
-              默认情况下，分片键是主键的第一列。可以使用非主键列作为分片键，但这可能会导致查询性能下降。  
-              <br>  
+          <td>表快照的分片键列（chunk key column）。在增量快照读取时，连接器会按照该列把表切分为多个 chunk 并并行读取。<br>
+              默认情况下，分片键是主键的第一列。可以使用非主键列作为分片键，但这可能会导致查询性能下降。<br>
+              当被捕获的表<strong>没有主键</strong>时，必须配置该参数，并且每张无主键表只能选择一个<strong>非空（NOT NULL）</strong>字段作为分片键。<br><br>
+
+              <strong>多表配置格式（Pipeline / SQL）</strong>：<code>&lt;table-pattern&gt;:&lt;column&gt;</code>，多个配置项使用分号 <code>;</code> 分隔。<br>
+              - <code>&lt;table-pattern&gt;</code>：表名匹配规则，语法与 <code>table-list</code> 一致，支持正则表达式；点号（<code>.</code>）作为库名与表名分隔符。如需在正则中包含点号（例如用 <code>.*</code> 匹配任意表名），请在模式字符串中将其写为 <code>\.</code>；反斜杠用于防止该点号被当作分隔符，解析时会自动去除。<br>
+              - <code>&lt;column&gt;</code>：分片键列名（字段名），必须存在于匹配到的表中。<br>
+              - 若同一张表被多个 <code>&lt;table-pattern&gt;</code> 命中，以<strong>最后一个</strong>生效。<br><br>
+
+              <strong>示例（单表）</strong>：<code>adb.user_table_1:email</code><br>
+              <strong>示例（多表同一分片键）</strong>：<code>adb.\.*:id</code>（为 <code>adb</code> 库下所有表指定 <code>id</code> 作为分片键列）<br>
+              <strong>示例（多表不同分片键）</strong>：<code>adb.user_table_[0-9]+:email;(app|web).order_\.*:order_id</code>
+              <br>
               <b>警告：</b> 使用非主键列作为分片键可能会导致数据不一致。请参阅 <a href="#警告">警告</a> 了解详细信息。  
           </td>
     </tr>

@@ -240,8 +240,9 @@ for more detailed information.</td>
           <td>optional</td>
           <td style="word-wrap: break-word;">(none)</td>
           <td>String</td>
-          <td>The chunk key of table snapshot, captured tables are split into multiple chunks by a chunk key when read the snapshot of table.
-            By default, the chunk key is the first column of the primary key. A column that is not part of the primary key can be used as a chunk key, but this may lead to slower query performance.</td>
+          <td>The chunk key column used to split table snapshots into multiple chunks for parallel reading during incremental snapshot.
+            By default, the chunk key is the first column of the primary key. A column that is not part of the primary key can be used as a chunk key, but this may lead to slower query performance.
+            When a captured table has <strong>no primary key</strong>, you must configure this option and choose exactly one <strong>NOT NULL</strong> column as the chunk key for that table.</td>
     </tr>
     <tr>
       <td>debezium.*</td>

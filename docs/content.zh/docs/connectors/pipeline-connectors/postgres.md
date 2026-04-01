@@ -156,6 +156,18 @@ pipeline:
       <td>表快照的块大小（行数），读取表的快照时，捕获的表被拆分为多个块。</td>
     </tr>
     <tr>
+      <td>scan.incremental.snapshot.chunk.key-column</td>
+      <td>optional</td>
+      <td style="word-wrap: break-word;">(none)</td>
+      <td>String</td>
+      <td>
+        表快照的分片键列（chunk key column）。在增量快照读取时，连接器会按照该列把表切分为多个 chunk 并并行读取。<br>
+        默认情况下，分片键是主键的第一列。可以使用非主键列作为分片键，但这可能会导致查询性能下降。<br>
+        当被捕获的表<strong>没有主键</strong>时，必须配置该参数，并且每张无主键表只能选择一个<strong>非空（NOT NULL）</strong>字段作为分片键。<br><br>
+        <b>警告：</b> 使用非主键列作为分片键可能会导致数据不一致。
+      </td>
+    </tr>
+    <tr>
       <td>scan.snapshot.fetch.size</td>
       <td>optional</td>
       <td style="word-wrap: break-word;">1024</td>
